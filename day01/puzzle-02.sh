@@ -11,7 +11,6 @@ for m in $(cat $input_numbers) ; do
 	   fi
 	fi
     done
-    
 done | grep answer | head -1
 
 ### xyzzy ###
