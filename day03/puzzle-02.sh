@@ -16,10 +16,7 @@ function traverse {
 	((hpos+=$hjump))
 
 	if (( $hpos > $tree_slots )) ; then
-	    typeset cpos=$(($hpos%$tree_slots))
-	    if (( cpos == 0 )) ; then
-		cpos=$tree_slots
-	    fi
+	    typeset cpos=$(($hpos%$tree_slots ? 0  : $tree_slots))
 	else
 	    typeset cpos=$hpos
 	fi

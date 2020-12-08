@@ -13,7 +13,10 @@ for (( i=2 ; i<=$forest_lines ; i++ )) ; do
     ((hpos+=$hjump))
 
     if (( $hpos > $tree_slots )) ; then
-	typeset cpos=$(($hpos%$tree_slots ? 0  : $tree_slots))
+	typeset cpos=$(($hpos%$tree_slots))
+	if (( cpos == 0 )) ; then
+	    cpos=$tree_slots
+	fi
     else
 	typeset cpos=$hpos
     fi
