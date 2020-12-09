@@ -1,8 +1,4 @@
-#! /bin/zsh 
-
-input_file=$1
-
-typeset valid_entries=0
+#! /bin/zsh
 
 function length {
     echo $1 | awk '{print length}'
@@ -28,11 +24,7 @@ function byr_p {
     typeset val=$(($(get_val $keyval)))
     typeset val_len=$(($(length $val)))
     
-    if (( ( val_len == 4 ) && ( val >= 1920 ) && ( val <= 2002 ) )) ; then
-	return 0
-    else
-	return 1
-    fi
+    (( ( val_len == 4 ) && ( val >= 1920 ) && ( val <= 2002 ) ))
 }
 
 function iyr_p {
@@ -42,11 +34,7 @@ function iyr_p {
     typeset val=$(($(get_val $keyval)))
     typeset val_len=$(($(length $val)))
     
-    if (( ( val_len == 4 ) && ( val >= 2010 ) && ( val <= 2020 ) )) ; then
-	return 0
-    else
-	return 1
-    fi
+    (( ( val_len == 4 ) && ( val >= 2010 ) && ( val <= 2020 ) ))
 }
 
 function eyr_p {
@@ -56,11 +44,7 @@ function eyr_p {
     typeset val=$(($(get_val $keyval)))
     typeset val_len=$(($(length $val)))
 
-    if (( ( val_len == 4 ) && ( val >= 2020 ) && ( val <= 2030 ) )) ; then
-	return 0
-    else
-	return 1
-    fi
+    (( ( val_len == 4 ) && ( val >= 2020 ) && ( val <= 2030 ) ))
 }
 
 function hgt_p {
@@ -70,19 +54,20 @@ function hgt_p {
 
     typeset keyval=$(get_keyval hgt $1)
     typeset val=$(get_val $keyval)
+
+    if ! echo $val | egrep -qi '^[0-9]*cm|[0-9]*in$' ; then
+	return 1
+    fi
+    
     typeset num=$(($(echo $val | sed 's/[ci][mn]//')))
     typeset unit=$(echo $val | sed 's/[0-9]*//')
 
     case $unit in
 	"cm")
-	    if (( (num >= 150 ) && (num <= 193) )) ; then
-		return 0
-	    fi
+	    (( (num >= 150 ) && (num <= 193) ))
 	    ;;
 	"in")
-	    if (( (num >= 59) && (num <= 76) )) ; then
-		return 0
-	    fi
+	    (( (num >= 59) && (num <= 76) ))
 	    ;;
 	*)
 	    return 1
@@ -96,7 +81,7 @@ function hcl_p {
     typeset keyval=$(get_keyval hcl $1)
     typeset val=$(get_val $keyval)
 
-    echo $val | egrep -q '#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]'
+    echo $val | egrep -iq '^#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$'
 }
 
 function ecl_p {
@@ -105,7 +90,7 @@ function ecl_p {
     typeset keyval=$(get_keyval ecl $1)
     typeset val=$(get_val $keyval)
 
-    echo $val | egrep -iq 'amb|blu|brn|gry|grn|hzl|oth'
+    echo $val | egrep -iq '^amb|blu|brn|gry|grn|hzl|oth$'
 }
 
 function pid_p {
@@ -114,7 +99,7 @@ function pid_p {
     typeset keyval=$(get_keyval pid $1)
     typeset val=$(get_val $keyval)
 
-    echo $val | egrep -q '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+    echo $val | egrep -q '^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$'
 }
 
 function cid_p {
@@ -122,6 +107,8 @@ function cid_p {
     return 0
 }
 
+typeset input_file=$1
+typeset valid_entries=0
 
 awk -v RS= '{$1=$1}1' $input_file | while read m ; do
     if ! echo $m | grep -q 'cid:' ; then
@@ -132,13 +119,10 @@ awk -v RS= '{$1=$1}1' $input_file | while read m ; do
     
     typeset m_fields=$(echo $m | awk '{print NF}')
 
-#   if [[ $m_fields -eq 8 ]] ; then
+    if [[ $m_fields -eq 8 ]] ; then
 	if byr_p $m && cid_p && ecl_p $m && eyr_p $m && hcl_p $m && hgt_p $m && iyr_p $m && pid_p $m ; then
-	    echo VALID: $m_fields fields, $m
 	    ((valid_entries+=1))
-#	fi
-    else		
-	echo INVALID: $m_fields fields, $m
+	fi
     fi
 done
 
