@@ -75,12 +75,12 @@ function hgt_p {
 
     case $unit in
 	"cm")
-	    if (( num >= 150  && num <= 193 )) ; then
+	    if (( (num >= 150 ) && (num <= 193) )) ; then
 		return 0
 	    fi
 	    ;;
 	"in")
-	    if (( num >= 59  && num <= 76 )) ; then
+	    if (( (num >= 59) && (num <= 76) )) ; then
 		return 0
 	    fi
 	    ;;
