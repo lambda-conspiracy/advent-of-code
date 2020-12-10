@@ -22,7 +22,7 @@ seats=$(for ticket in $(cat $input_file) ; do
 	done | sort -n)
 
 my_seat=$(($(count=$(($(echo $seats | head -1)))
-	  for s in $(cat seats) ; do
+	  for s in $(echo $seats) ; do
 	      if [[ $s -ne $count ]] ; then
 		  echo $s
 	      fi
